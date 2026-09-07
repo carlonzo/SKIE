@@ -6,3 +6,7 @@ import kotlinx.coroutines.flow.flowOf
 
 @FlowInterop.Disabled
 fun foo(): Flow<Int> = flowOf(1, 2, 3)
+
+class Bar @FlowInterop.Disabled constructor(
+    val baz: Flow<Int>,
+)

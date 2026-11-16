@@ -2,11 +2,12 @@
 
 package co.touchlab.skie.kir.descriptor
 
-import org.jetbrains.kotlin.backend.konan.NativeSecondStageCompilationConfig
+import co.touchlab.skie.compat.KonanConfig
+import co.touchlab.skie.compat.allLibraries
 import org.jetbrains.kotlin.konan.library.isImplicitlyLoadedFromKotlinNativeDistribution
 import org.jetbrains.kotlin.library.KotlinLibrary
 
-internal fun getDefaultLibraries(konanConfig: NativeSecondStageCompilationConfig): Set<KotlinLibrary> =
-    konanConfig.resolvedLibraries.getFullList()
+internal fun getDefaultLibraries(konanConfig: KonanConfig): Set<KotlinLibrary> =
+    konanConfig.allLibraries
         .filter { it.isImplicitlyLoadedFromKotlinNativeDistribution }
         .toSet()

@@ -2,6 +2,8 @@
 
 package co.touchlab.skie.entrypoint
 
+import co.touchlab.skie.compat.bindingContextCompat
+import co.touchlab.skie.compat.mainIrModule
 import co.touchlab.skie.compilerinject.compilerplugin.mainSkieContext
 import co.touchlab.skie.compilerinject.interceptor.PhaseInterceptor
 import co.touchlab.skie.context.KotlinIrPhaseContext
@@ -40,11 +42,11 @@ internal class LinkKlibsPhaseInterceptor : PhaseInterceptor<LinkKlibsContext, Li
 
         EntrypointUtils.runKotlinIrPhases(
             mainSkieContext = mainSkieContext,
-            moduleFragment = phaseOutput.irModule,
+            moduleFragment = phaseOutput.mainIrModule,
             pluginContext = KotlinIrPhaseContext.CompatibleIrPluginContext(
                 symbolTable = symbolTable,
                 irBuiltIns = phaseOutput.irBuiltIns,
-                bindingContext = context.bindingContext,
+                bindingContext = context.bindingContextCompat,
                 linker = phaseOutput.irLinker,
                 languageVersionSettings = languageVersionSettings,
                 typeTranslator = typeTranslator,

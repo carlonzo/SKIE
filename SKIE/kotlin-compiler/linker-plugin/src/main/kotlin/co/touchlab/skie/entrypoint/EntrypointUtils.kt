@@ -15,7 +15,7 @@ import co.touchlab.skie.context.SirPhaseContext
 import co.touchlab.skie.context.SymbolTablePhaseContext
 import co.touchlab.skie.kir.descriptor.ObjCExportedInterfaceProvider
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.konan.FrontendServices
+import org.jetbrains.kotlin.backend.konan.objcexport.ObjCExportMapper
 import co.touchlab.skie.compat.KonanConfig
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -27,7 +27,7 @@ internal object EntrypointUtils {
     fun createMainSkieContext(
         initPhaseContext: InitPhaseContext,
         konanConfig: KonanConfig,
-        frontendServices: FrontendServices,
+        kotlinObjCExportMapper: ObjCExportMapper,
         mainModuleDescriptor: ModuleDescriptor,
         exportedDependencies: Lazy<Collection<ModuleDescriptor>>,
     ): MainSkieContext =
@@ -35,7 +35,7 @@ internal object EntrypointUtils {
             val mainSkieContext = MainSkieContext(
                 initPhaseContext = initPhaseContext,
                 konanConfig = konanConfig,
-                frontendServices = frontendServices,
+                kotlinObjCExportMapper = kotlinObjCExportMapper,
                 mainModuleDescriptor = mainModuleDescriptor,
                 exportedDependencies = exportedDependencies.value,
             )

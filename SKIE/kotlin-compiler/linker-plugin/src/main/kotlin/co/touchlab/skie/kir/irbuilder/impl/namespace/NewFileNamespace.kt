@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.backend.common.SimpleMemberScope
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
-import org.jetbrains.kotlin.descriptors.PackageFragmentProviderImpl
+import org.jetbrains.kotlin.descriptors.PackageFragmentProviderOptimized
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.descriptors.SourceFile
 import org.jetbrains.kotlin.descriptors.impl.MutablePackageFragmentDescriptor
@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.declarations.impl.IrFileImpl
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.resolve.source.PsiSourceFile
@@ -72,7 +73,7 @@ class NewFileNamespace private constructor(
         private val packagesByName = mutableMapOf<FqName, PackageFragmentDescriptor>()
 
         init {
-            val syntheticPackageProvider = PackageFragmentProviderImpl(packagesByName.values)
+            val syntheticPackageProvider = LivePackageFragmentProvider(packagesByName.values)
 
             val moduleDescriptor = moduleDescriptor.reflectedBy<ModuleDescriptorImplReflector>()
             val packageProvider = moduleDescriptor.packageFragmentProviderForModuleContent
@@ -109,6 +110,26 @@ class NewFileNamespace private constructor(
                 .map { it.joinToString(".") }
                 .map { MutablePackageFragmentDescriptor(moduleDescriptor, FqName(it)) }
                 .toList()
+    }
+
+    // Kotlin 2.5.0 `PackageFragmentProviderImpl` snapshots its fragments on construction, but packages are added here only later.
+    private class LivePackageFragmentProvider(
+        private val packageFragments: Collection<PackageFragmentDescriptor>,
+    ) : PackageFragmentProviderOptimized {
+
+        override fun collectPackageFragments(fqName: FqName, packageFragments: MutableCollection<PackageFragmentDescriptor>) {
+            this.packageFragments.filterTo(packageFragments) { it.fqName == fqName }
+        }
+
+        @Suppress("OVERRIDE_DEPRECATION")
+        override fun getPackageFragments(fqName: FqName): List<PackageFragmentDescriptor> =
+            packageFragments.filter { it.fqName == fqName }
+
+        override fun getSubPackagesOf(fqName: FqName, nameFilter: (Name) -> Boolean): Collection<FqName> =
+            packageFragments.map { it.fqName }.filter { !it.isRoot && it.parent() == fqName }
+
+        override fun isEmpty(fqName: FqName): Boolean =
+            packageFragments.none { it.fqName == fqName }
     }
 
     private class Context(val moduleDescriptor: ModuleDescriptor, mainIrModuleFragment: Lazy<IrModuleFragment>) {

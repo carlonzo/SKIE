@@ -3,6 +3,7 @@ package co.touchlab.skie.phases.other
 import co.touchlab.skie.phases.LinkPhase
 import co.touchlab.skie.phases.descriptorKirProvider
 import co.touchlab.skie.phases.descriptorReporter
+import co.touchlab.skie.compat.findPsiCompat
 import co.touchlab.skie.compat.reportCompilerMessage
 import co.touchlab.skie.phases.konanConfig
 import co.touchlab.skie.util.Reporter
@@ -10,7 +11,6 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageUtil
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.js.resolve.diagnostics.findPsi
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 
@@ -39,7 +39,7 @@ object ProcessReportedMessagesPhase : LinkPhase {
 
     context(LinkPhase.Context)
     private fun <T> report(report: Reporter.Report<T>, declaration: DeclarationDescriptor?) {
-        val location = MessageUtil.psiElementToMessageLocation(declaration?.findPsi())?.let {
+        val location = MessageUtil.psiElementToMessageLocation(declaration?.findPsiCompat())?.let {
             CompilerMessageLocation.create(it.path, it.line, it.column, it.lineContent)
         }
 

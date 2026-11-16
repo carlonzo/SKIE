@@ -6,26 +6,27 @@ import co.touchlab.skie.compilerinject.compilerplugin.initPhaseContext
 import co.touchlab.skie.compilerinject.interceptor.PhaseInterceptor
 import co.touchlab.skie.compat.PhaseContext
 import co.touchlab.skie.kir.descriptor.ObjCExportedInterfaceProvider
-import org.jetbrains.kotlin.backend.konan.driver.phases.FrontendPhaseOutput
+import co.touchlab.skie.compat.FrontendOutput
+import co.touchlab.skie.compat.createObjCExportMapper
 import org.jetbrains.kotlin.backend.konan.driver.phases.ProduceObjCExportInterfacePhase
 import org.jetbrains.kotlin.backend.konan.getExportedDependencies
 import org.jetbrains.kotlin.backend.konan.objcexport.ObjCExportedInterface
 
 internal class ProduceObjCExportInterfacePhaseInterceptor :
-    PhaseInterceptor<PhaseContext, FrontendPhaseOutput.Full, ObjCExportedInterface> {
+    PhaseInterceptor<PhaseContext, FrontendOutput, ObjCExportedInterface> {
 
     override fun getInterceptedPhase(): Any = ProduceObjCExportInterfacePhase
 
     override fun intercept(
         context: PhaseContext,
-        input: FrontendPhaseOutput.Full,
-        next: (PhaseContext, FrontendPhaseOutput.Full) -> ObjCExportedInterface,
+        input: FrontendOutput,
+        next: (PhaseContext, FrontendOutput) -> ObjCExportedInterface,
     ): ObjCExportedInterface {
         val konanConfig = context.konanConfig
         val mainSkieContext = EntrypointUtils.createMainSkieContext(
             initPhaseContext = context.config.configuration.initPhaseContext,
             konanConfig = konanConfig,
-            frontendServices = input.frontendServices,
+            kotlinObjCExportMapper = input.createObjCExportMapper(konanConfig),
             mainModuleDescriptor = input.moduleDescriptor,
             exportedDependencies = lazy { input.moduleDescriptor.getExportedDependencies(konanConfig) },
         )

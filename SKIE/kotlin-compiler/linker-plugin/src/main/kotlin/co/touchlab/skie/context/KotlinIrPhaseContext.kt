@@ -2,6 +2,7 @@
 
 package co.touchlab.skie.context
 
+import co.touchlab.skie.compat.TypeTranslator
 import co.touchlab.skie.compat.modulesStringKeyed
 import co.touchlab.skie.kir.irbuilder.impl.DeclarationBuilderImpl
 import co.touchlab.skie.kir.util.SkieSymbolTable
@@ -13,7 +14,6 @@ import org.jetbrains.kotlin.ir.builders.IrGeneratorContext
 import org.jetbrains.kotlin.ir.builders.IrGeneratorContextBase
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.util.SymbolTable
-import org.jetbrains.kotlin.ir.util.TypeTranslator
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class KotlinIrPhaseContext internal constructor(

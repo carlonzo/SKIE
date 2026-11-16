@@ -71,7 +71,8 @@ class CompilerArgumentsProvider(
 
             temporaryFilesDir = tempDirectory.absolutePathString()
             outputName = outputFile.absolutePathString()
-            bundleId = "Kotlin"
+            // `-Xbundle-id` was removed in Kotlin 2.5.0, `-Xbinary=bundleId` works in all supported versions.
+            binaryOptions = (binaryOptions ?: emptyArray()) + "bundleId=Kotlin"
 
             multiPlatform = true
 
